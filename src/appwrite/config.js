@@ -104,7 +104,6 @@ export class Service{
                 ID.unique(),
                 file,
             )
-            return true
         } catch (error) {
             console.log("Appwrite service :: uploadFile :: error",error);
             return false
@@ -117,7 +116,6 @@ export class Service{
                 conf.appwriteBucketId,
                 fileId,
             )
-            return true
         } catch (error) {
             console.log("Appwrite service :: deleteFile :: error",error);
             return false
@@ -125,10 +123,12 @@ export class Service{
     }
 
     getFilePreview(fileId){
-        return this.buckets.getFilePreview(
+        if (!fileId) return "";
+        const previewUrl = this.buckets.getFilePreview(
             conf.appwriteBucketId,
             fileId,
-        )
+        );
+        return previewUrl ? previewUrl.toString() : "";
     }
 }
 

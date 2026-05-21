@@ -11,9 +11,9 @@ function Select({
     <div className='w-full'>
         {label && <label
         htmlFor={id}
-        className=''
-        ></label>}
-      {<Select
+        className='inline-block mb-1 pl-1'
+        >{label}</label>}
+        <select
         {...props}
         id={id}
         ref={ref}
@@ -25,7 +25,7 @@ function Select({
                 </option>
             ))}
             
-            </Select>}
+        </select>
     </div>
   )
 }

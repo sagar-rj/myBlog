@@ -4,6 +4,7 @@ import {useDispatch} from 'react-redux'
 import authService from './appwrite/auth'
 import {Header, Footer} from './components/index'
 import { login, logout } from './store/authSlice';
+import { Outlet } from 'react-router-dom';
 
 
 function App() {
@@ -27,7 +28,7 @@ return !loading ? (
     <div className='w-full block'>
     <Header/>
     <main>
-      {/* <outlet/> */}
+      <Outlet />
     </main>
     <Footer/>
     </div>

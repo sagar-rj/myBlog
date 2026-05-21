@@ -17,6 +17,19 @@ export default function PostForm({ post }) {
 
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
+    const imageWatch = watch("image");
+    const [imagePreview, setImagePreview] = React.useState(null);
+
+    React.useEffect(() => {
+        if (imageWatch && imageWatch[0]) {
+            const file = imageWatch[0];
+            const objectUrl = URL.createObjectURL(file);
+            setImagePreview(objectUrl);
+            return () => URL.revokeObjectURL(objectUrl);
+        } else {
+            setImagePreview(null);
+        }
+    }, [imageWatch]);
 
     const submit = async (data) => {
         if (post) {
@@ -28,11 +41,14 @@ export default function PostForm({ post }) {
 
             const dbPost = await appwriteService.updatePost(post.$id, {
                 ...data,
-                featuredImage: file ? file.$id : undefined,
+                featuredImage: file ? file.$id : post.featuredImage,
             });
 
             if (dbPost) {
+                alert("Post updated successfully!");
                 navigate(`/post/${dbPost.$id}`);
+            } else {
+                alert("Failed to update post. Please try again.");
             }
         } else {
             const file = await appwriteService.uploadFile(data.image[0]);
@@ -43,8 +59,13 @@ export default function PostForm({ post }) {
                 const dbPost = await appwriteService.createPost({ ...data, userId: userData.$id });
 
                 if (dbPost) {
+                    alert("Post created successfully!");
                     navigate(`/post/${dbPost.$id}`);
+                } else {
+                    alert("Failed to create post. Please try again.");
                 }
+            } else {
+                alert("Failed to upload featured image. Please try again.");
             }
         }
     };
@@ -98,12 +119,22 @@ export default function PostForm({ post }) {
                     accept="image/png, image/jpg, image/jpeg, image/gif"
                     {...register("image", { required: !post })}
                 />
-                {post && (
+                {imagePreview ? (
                     <div className="w-full mb-4">
+                        <p className="text-sm text-gray-700 font-semibold mb-2">New Image Preview:</p>
+                        <img
+                            src={imagePreview}
+                            alt="New preview"
+                            className="rounded-lg border border-gray-300"
+                        />
+                    </div>
+                ) : post && (
+                    <div className="w-full mb-4">
+                        <p className="text-sm text-gray-700 font-semibold mb-2">Current Image:</p>
                         <img
                             src={appwriteService.getFilePreview(post.featuredImage)}
                             alt={post.title}
-                            className="rounded-lg"
+                            className="rounded-lg border border-gray-300"
                         />
                     </div>
                 )}
